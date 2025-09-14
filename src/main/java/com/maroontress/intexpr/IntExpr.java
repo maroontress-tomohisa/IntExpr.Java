@@ -217,6 +217,21 @@ public final class IntExpr {
         return Interpreter.run(list.size(), list);
     }
 
+    /**
+        Evaluates the specified collection of tokens representing an
+        expression and returns the evaluated value.
+
+        <p>The expression is of 32-bit signed integer in two's-complement
+        notation.</p>
+
+        @param tokens The collection of tokens to evaluate.
+        @return The evaluated value.
+        @throws IllegalArgumentException If the specified {@code tokens} have
+            syntax errors such as a mismatched or missing parenthesis, a stray
+            token, an unknown token.
+        @throws ArithmeticException If there is an attempt to divide an integer
+            value by zero or to overflow.
+    */
     public static int eval(Collection<Token> tokens) {
         var list = Compiler.toRpn(tokens);
         return Interpreter.run(list.size(), list);

@@ -85,6 +85,20 @@ public final class Compiler {
         }
     }
 
+    /**
+        Creates a new list containing {@link Instruction} objects from the
+        expression that the specified collection of tokens provides.
+
+        <p>The list contains the operators and operands in Reverse Polish
+        notation, so it does not include any parentheses.</p>
+
+        @param tokens The collection of tokens that provides the expression
+            to evaluate.
+        @return The new list containing {@link Instruction} objects.
+        @throws IllegalArgumentException If the specified expression has
+            syntax errors, unknown operators, illegal tokens, mismatched
+            parentheses.
+    */
     public static List<Instruction> toRpn(Collection<Token> tokens) {
         var c = new Compiler();
         var iterator = tokens.iterator();
