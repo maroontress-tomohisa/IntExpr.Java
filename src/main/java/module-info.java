@@ -3,6 +3,6 @@
     expression and returns the result.
 */
 module com.maroontress.intexpr {
-    requires com.maroontress.clione;
+    requires transitive com.maroontress.clione;
     exports com.maroontress.intexpr;
 }

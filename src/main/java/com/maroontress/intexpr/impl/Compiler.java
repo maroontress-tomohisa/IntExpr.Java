@@ -2,12 +2,17 @@ package com.maroontress.intexpr.impl;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.maroontress.clione.LexicalParser;
 import com.maroontress.clione.Token;
 import com.maroontress.clione.TokenType;
@@ -68,8 +73,26 @@ public final class Compiler {
     public static List<Instruction> toRpn(Reader reader) throws IOException {
         try (var parser = LexicalParser.of(reader, Collections.emptySet())) {
             var c = new Compiler();
-            return c.getInstructions(parser);
+            return c.getInstructions(() -> {
+                try {
+                    return parser.next();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
         }
+    }
+
+    public static List<Instruction> toRpn(Collection<Token> tokens) {
+        var c = new Compiler();
+        var iterator = tokens.iterator();
+        return c.getInstructions(() -> {
+            return iterator.hasNext()
+                ? Optional.of(iterator.next())
+                : Optional.empty();
+        });
     }
 
     private static Map<TokenType, Action> newUnaryMap() {
@@ -110,13 +133,13 @@ public final class Compiler {
                 Messages.of(token, "unknown token"));
     }
 
-    private List<Instruction> getInstructions(LexicalParser parser)
-            throws IOException {
+    private List<Instruction> getInstructions(
+            Supplier<Optional<Token>> supplier) {
         if (currentMap.isEmpty()) {
             throw new IllegalStateException();
         }
         for (;;) {
-            var maybeToken = parser.next();
+            var maybeToken = supplier.get();
             if (maybeToken.isEmpty()) {
                 break;
             }

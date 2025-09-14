@@ -2,7 +2,10 @@ package com.maroontress.intexpr;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
+
+import com.maroontress.clione.Token;
 import com.maroontress.intexpr.impl.Compiler;
 import com.maroontress.intexpr.impl.Instruction;
 import com.maroontress.intexpr.impl.Interpreter;
@@ -211,6 +214,11 @@ public final class IntExpr {
     */
     public static int eval(String expr) {
         var list = toRpn(expr);
+        return Interpreter.run(list.size(), list);
+    }
+
+    public static int eval(Collection<Token> tokens) {
+        var list = Compiler.toRpn(tokens);
         return Interpreter.run(list.size(), list);
     }
 
