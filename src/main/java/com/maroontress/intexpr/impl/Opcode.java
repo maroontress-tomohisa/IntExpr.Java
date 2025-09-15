@@ -76,4 +76,7 @@ public enum Opcode {
 
     /** Constant (immediate value). */
     CONST,
+
+    /** Condition. */
+    COND,
 }

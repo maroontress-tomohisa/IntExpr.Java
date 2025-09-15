@@ -13,6 +13,7 @@ import com.maroontress.clione.Token;
 import com.maroontress.clione.TokenType;
 
 import static com.maroontress.intexpr.impl.OperatorType.BINARY;
+import static com.maroontress.intexpr.impl.OperatorType.TERNARY;
 import static com.maroontress.intexpr.impl.OperatorType.UNARY;
 import static java.util.Map.entry;
 
@@ -93,6 +94,17 @@ public final class Compiler {
 
     private static Action newOperatorAction(OperatorType type) {
         return (c, token) -> {
+            if (type == BINARY && token.isValue("?")) {
+                var maybeOperator = Operator.of(token, TERNARY);
+                if (maybeOperator.isEmpty()) {
+                    var m = Messages.of(token, "unknown TERNARY operator");
+                    throw new IllegalArgumentException(m);
+                }
+                var o = maybeOperator.get();
+                c.stack.push(PendedOperator.of(o));
+                c.currentMap = UNARY_MAP;
+                return;
+            }
             var maybeOperator = Operator.of(token, type);
             if (maybeOperator.isEmpty()) {
                 var m = Messages.of(token, "unknown " + type + " operator");
@@ -147,6 +159,23 @@ public final class Compiler {
 
     private void rightParen(Token token) {
         var value = token.getValue();
+        if (value.equals(":")) {
+            for (;;) {
+                var o = stack.pollFirst();
+                if (o == null) {
+                    throw new IllegalArgumentException(
+                            Messages.of(token, "mismatched colon"));
+                }
+                if (!o.getToken().isValue("?")) {
+                    list.add(o.toOperator().get());
+                    continue;
+                }
+                var operator = o.toOperator().get();
+                stack.push(PendedOperator.newColon(token, operator));
+                currentMap = UNARY_MAP;
+                return;
+            }
+        }
         if (!value.equals(")")) {
             throw new IllegalArgumentException(
                     Messages.of(token, "syntax error"));

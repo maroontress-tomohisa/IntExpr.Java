@@ -64,6 +64,26 @@ public interface PendedOperator {
         };
     }
 
+    static PendedOperator newColon(Token token, Operator operator) {
+        return new PendedOperator() {
+            @Override
+            public int comparePrecedence(Operator that) {
+                return operator.getSpec().getPrecedence()
+                        - that.getSpec().getPrecedence();
+            }
+
+            @Override
+            public Optional<Operator> toOperator() {
+                return Optional.of(operator);
+            }
+
+            @Override
+            public Token getToken() {
+                return token;
+            }
+        };
+    }
+
     /**
         Returns a new {@link PendedOperator} object that represents the
         specified operator.

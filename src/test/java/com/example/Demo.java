@@ -13,4 +13,9 @@ public final class Demo {
     public void treeDemo() {
         TreeDemo.main(new String[] {"(1+2*3<<4)%5"});
     }
+
+    @Test
+    public void ternaryOperatorTree() {
+        TreeDemo.main(new String[] {"0?(1+2*3<<4)%5:42"});
+    }
 }

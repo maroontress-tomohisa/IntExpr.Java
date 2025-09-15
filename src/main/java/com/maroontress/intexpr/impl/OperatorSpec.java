@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.maroontress.intexpr.syntaxtree.SyntaxNode;
 
 import static com.maroontress.intexpr.impl.OperatorType.BINARY;
+import static com.maroontress.intexpr.impl.OperatorType.TERNARY;
 import static com.maroontress.intexpr.impl.OperatorType.UNARY;
 import static java.util.Map.entry;
 import static java.util.function.Function.identity;
@@ -111,6 +112,8 @@ public final class OperatorSpec implements Consumer<Deque<SyntaxNode>> {
             .add("&&", Opcode.LAND, (a, b) -> (a != 0 && b != 0) ? 1 : 0)
             .nextPrecedence()
             .add("||", Opcode.LOR, (a, b) -> (a != 0 || b != 0) ? 1 : 0)
+            .nextPrecedence()
+            .add("?", Opcode.COND, (cond, a, b) -> (cond != 0) ? a : b)
             .toList();
 
     private static final Map<OperatorType, Map<String, OperatorSpec>>
@@ -140,7 +143,8 @@ public final class OperatorSpec implements Consumer<Deque<SyntaxNode>> {
 
     private static Map<OperatorType, Map<String, OperatorSpec>>
             newOperatorClassMap() {
-        return Map.ofEntries(toEntry(UNARY), toEntry(BINARY));
+        return Map.ofEntries(
+            toEntry(UNARY), toEntry(BINARY), toEntry(TERNARY));
     }
 
     private static Map<String, OperatorSpec>
@@ -155,7 +159,8 @@ public final class OperatorSpec implements Consumer<Deque<SyntaxNode>> {
         symbol and operator type.
 
         @param symbol The symbol representing the {@link OperatorSpec} object.
-        @param type {@link OperatorType#UNARY} or {@link OperatorType#BINARY}.
+        @param type {@link OperatorType#UNARY}, {@link OperatorType#BINARY},
+            or {@link OperatorType#TERNARY}.
         @return The {@link OperatorSpec} object if found, otherwise
             {@link Optional#empty()}.
     */
@@ -224,6 +229,11 @@ public final class OperatorSpec implements Consumer<Deque<SyntaxNode>> {
 
         public Builder add(String symbol, Opcode opcode, IntBinaryOperation o) {
             add(symbol, opcode, BINARY, o);
+            return this;
+        }
+
+        public Builder add(String symbol, Opcode opcode, IntTernaryOperation o) {
+            add(symbol, opcode, TERNARY, o);
             return this;
         }
 

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import com.maroontress.intexpr.syntaxtree.BinaryOperatorNode;
 import com.maroontress.intexpr.syntaxtree.SyntaxNode;
+import com.maroontress.intexpr.syntaxtree.TernaryOperatorNode;
 import com.maroontress.intexpr.syntaxtree.UnaryOperatorNode;
 
 /**
@@ -27,6 +28,17 @@ public enum OperatorType {
         var right = s.pop();
         var left = s.pop();
         var node = new BinaryOperatorNode(o, left, right);
+        s.push(node);
+    }),
+    // CSON: NeedBraces
+
+    // CSOFF: NeedBraces
+    /** Represents binary operators. */
+    TERNARY(o -> s -> {
+        var right = s.pop();
+        var left = s.pop();
+        var cond = s.pop();
+        var node = new TernaryOperatorNode(o, cond, left, right);
         s.push(node);
     });
     // CSON: NeedBraces

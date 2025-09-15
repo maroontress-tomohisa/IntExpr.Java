@@ -350,4 +350,53 @@ public final class IntExprTest {
         }
         throw new AssertionError();
     }
+
+    @Test
+    public void ternaryOperatorWhenTrue() {
+        var expr = "1 ? 42 : 1";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
+
+    @Test
+    public void ternaryOperatorWhenFalse() {
+        var expr = "0 ? 42 : 1";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(1));
+    }
+
+    @Test
+    public void ternaryOperatorLeftNest() {
+        var expr = "1 ? 2 ? 42 : 3 : 4";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
+
+    @Test
+    public void ternaryOperatorLeftNestWithParen() {
+        var expr = "1 ? (2 ? 42 : 3) : 4";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
+
+    @Test
+    public void ternaryOperatorRightNest() {
+        var expr = "0 ? 1 : 2 ? 42 : 3";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
+
+    @Test
+    public void ternaryOperatorRightNestWithParen() {
+        var expr = "0 ? 1 : (2 ? 42 : 3)";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
+
+    @Test
+    public void ternaryContainingParen() {
+        var expr = "0 ? (1+2*3<<4)%5 : 42";
+        var v = IntExpr.eval(expr);
+        assertThat(v, is(42));
+    }
 }
