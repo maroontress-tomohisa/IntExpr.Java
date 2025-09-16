@@ -9,6 +9,7 @@ public interface IntTernaryOperation extends Operation {
     /**
         Returns the value operated with the specified operands.
 
+        @param cond The condition.
         @param left The left operand.
         @param right The right operand.
         @return The operation result.

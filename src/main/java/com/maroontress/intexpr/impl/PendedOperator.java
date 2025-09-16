@@ -64,6 +64,14 @@ public interface PendedOperator {
         };
     }
 
+    /**
+        Returns a new {@link PendedOperator} object that represents a
+        colon in the ternary operator.
+
+        @param token The token representing a colon.
+        @param operator The operator that this wraps.
+        @return The new {@link PendedOperator} object.
+    */
     static PendedOperator newColon(Token token, Operator operator) {
         return new PendedOperator() {
             @Override
