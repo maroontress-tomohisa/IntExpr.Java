@@ -399,4 +399,28 @@ public final class IntExprTest {
         var v = IntExpr.eval(expr);
         assertThat(v, is(42));
     }
+
+    @Test
+    public void leftParenMismatchInTernary() {
+        var expr = "0 ? (42 : 1";
+        try {
+            IntExpr.eval(expr);
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage(), is("L1:5: mismatched parenthesis: \"(\""));
+            return;
+        }
+        throw new AssertionError();
+    }
+
+    @Test
+    public void rightParenMismatchInTernary() {
+        var expr = "0 ? 42) : 1";
+        try {
+            IntExpr.eval(expr);
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage(), is("L1:7: mismatched parenthesis: \")\""));
+            return;
+        }
+        throw new AssertionError();
+    }
 }

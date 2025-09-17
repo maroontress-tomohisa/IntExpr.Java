@@ -167,7 +167,12 @@ public final class Compiler {
                             Messages.of(token, "mismatched colon"));
                 }
                 if (!o.getToken().isValue("?")) {
-                    list.add(o.toOperator().get());
+                    var maybeOperator = o.toOperator();
+                    if (maybeOperator.isEmpty()) {
+                        throw new IllegalArgumentException(
+                                Messages.of(o.getToken(), "mismatched parenthesis"));
+                    }
+                    list.add(maybeOperator.get());
                     continue;
                 }
                 var operator = o.toOperator().get();
